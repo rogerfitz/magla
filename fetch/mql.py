@@ -78,7 +78,27 @@ def getMQL(query):
 	#for r in response['result']:
 	#	print r['id']
 
+def getSongs(mid):
+
+	#try:
+		#query = [{"name": {}, "a:type":"/music/artist", "b:type": "/common/topic", "limit": 100}]"artist":{"id":"/en/bob_dylan"}
+		query = [{"domain": "music", "type":"/music/album","artist":{"id":"/en/bob_dylan"}, 'name': None,"limit":3}]
+		params = { 'query': json.dumps(query), 'key': api_key}
+
+
+
+		url = service_url + '?' + urllib.urlencode(params)
+		response = urllib.urlopen(url).read()
+		data = json.loads(response)
+		
+
+		return  data
+	#except:
+		return []
+
 #getLabels('/m/05bmb_')
+print getSongs('/m/01vsy3q')
+
 '''
 getMQL([{
  "mid":   '/m/05bmb_',
