@@ -33,9 +33,23 @@ def getArtists(query, limit):
 		print response
 		print sys.exc_info()
 		print url
-		#print response
-##def expand(depth, attr):
 
+def getSongs():
+	params = {
+	  'key': api_key,
+	  'query': "Castles made of sand",
+	  #'type': "/music/track",
+	  'limit': 10,
+	  
+	}
+
+	url = service_url + '?' + urllib.urlencode(params)
+	response = json.loads(urllib.urlopen(url).read())
+
+	for r in response['result']:
+		print r['name']
+	#print response
+getSongs()
 
 '''
 for property in topic['property']:

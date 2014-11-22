@@ -82,7 +82,7 @@ def getSongs(mid):
 
 	#try:
 		#query = [{"name": {}, "a:type":"/music/artist", "b:type": "/common/topic", "limit": 100}]"artist":{"id":"/en/bob_dylan"}
-		query = [{"domain": "music", "type":"/music/album","artist":{"id":"/en/bob_dylan"}, 'name': None,"limit":3}]
+		query = [{"type":"/music/track","artist":{"id":"/en/jimi_hendrix"}, 'name': None,"limit":10}]
 		params = { 'query': json.dumps(query), 'key': api_key}
 
 
@@ -97,7 +97,7 @@ def getSongs(mid):
 		return []
 
 #getLabels('/m/05bmb_')
-print getSongs('/m/01vsy3q')
+print pprint.pprint(getSongs('/m/01vsy3q'))
 
 '''
 getMQL([{
