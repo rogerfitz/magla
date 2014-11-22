@@ -3,7 +3,7 @@ import urllib
 
 api_key = open(".freebase_api_key").read()
 service_url = 'https://www.googleapis.com/freebase/v1/mqlread'
-query = [{"name": {}, "a:type":"/music/artist", "b:type": "/common/topic", "limit": 100, "score": None}]
+query = [{"name": {}, "a:type":"/music/artist", "b:type": "/common/topic", "limit": 100}]
 
 params = {'query': json.dumps(query), 'key': api_key}
 

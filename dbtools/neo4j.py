@@ -5,7 +5,7 @@ from helpers import labelList
 from shitjson import properDump
 import requests
 
-db_url = 'http://192.168.1.212:7474/db/data/cypher';
+db_url = 'http://129.105.70.12:7474/db/data/cypher';
 
 def buildNodes():
 	session = cypher.Session(db_url)
