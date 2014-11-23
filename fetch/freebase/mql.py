@@ -5,7 +5,7 @@ import pprint
 api_key = open(".freebase_api_key").read()
 service_url = 'https://www.googleapis.com/freebase/v1/mqlread'
 
-def getGenres():
+def fromGenres():
 	query = [{
 	'type': '/music/genre', 
 	'/common/topic/image' : [{"id": None, 'limit': 1}],
@@ -13,7 +13,12 @@ def getGenres():
 	'name': None, 
 	'mid': None, 
 	'id': None,
-	'artists': [{'name': None, 'mid':None}], 
+	'artists': [{
+		'name': None, 
+		'mid':None,
+		"key": {"namespace": "/wikipedia/en_id", "value": None},
+		'id': None,
+		}],
 	'limit': 5
 	}]
 

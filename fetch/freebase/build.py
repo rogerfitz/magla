@@ -2,27 +2,42 @@ import json
 import urllib
 import pprint
 from neo4j import buildNode, buildRel, getInfluences
-from mql import resolveNode, getLabels, getArtist, getGenres
+from mql import resolveNode, getLabels, getArtist, fromGenres
 import sys, traceback
 
 api_key = open(".freebase_api_key").read()
 service_url = 'https://www.googleapis.com/freebase/v1/topic'
 
-def buildGenres():
-	genres = getGenres()
+def buildFromGenres():
+	genres = fromGenres()
+	
 	for g in genres:
-		data = {
+		genre = {
 		'id': g['id'],
-		'img_url': 'https://usercontent.googleapis.com/freebase/v1/image/'+str(g['id']),
+		'img_url': 'https://usercontent.googleapis.com/freebase/v1/image'+str(g['id']),
 		'wiki_url': 'http://en.wikipedia.org/wiki/index.html?curid='+g['key']['value'],
 		'name': g['name'],
 		'mid': g['mid'],
 		'type': g['type'],
 		}
 		labels = [g['type'], 'genre']
-		buildNode(labels, data)
-		
-	print pprint.pprint(genres)
+		buildNode(labels, genre)
+
+		for a in g['artists']:
+			#add type
+			artist = {
+			'id': a['id'],
+			'img_url': 'https://usercontent.googleapis.com/freebase/v1/image'+str(a['id']),
+			'mid': a['mid'],
+			'name': a['name'],
+			'wiki_url': 'http://en.wikipedia.org/wiki/index.html?curid='+a['key']['value'],
+			
+			}
+			labels = ['artist']
+			buildNode(labels, artist)
+			buildRel(artist, genre, 'connected')
+	
+	#print pprint.pprint(genres)
 
 def buildTopic(name):
 	pNode, pLabel = resolveNode(name)
@@ -82,4 +97,4 @@ def buildTopic(name):
 				#print pprint.pprint(response['property'][prop]['values'])
 		'''
 #getArtist('Jimi Hendrix')
-buildGenres()
+buildFromGenres()
