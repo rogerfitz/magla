@@ -62,14 +62,14 @@
             renderer.run();
 				
 			graphics.node(function(node) {
-					 
 				var ui = Viva.Graph.svg('g'),
                   // Create SVG text element with user id as content
                   svgText = Viva.Graph.svg('text').attr('y', '-4px').text(node.data['name']),
                   img = Viva.Graph.svg('image')
                      .attr('width', nodeSize)
                      .attr('height', nodeSize)
-                     .link('http://assets.rollingstone.com/assets/images/list/2b1d08ea01d2714a82785574e1434b4dcbecbc53.jpg')//.link('/static/img/computer.png');
+                     .link(node['data']['img_url']);
+                     	//'http://assets.rollingstone.com/assets/images/list/2b1d08ea01d2714a82785574e1434b4dcbecbc53.jpg')
               ui.append(svgText);
               ui.append(img);	 
 					 
@@ -255,40 +255,75 @@
 						});
 			
                 };
-				
-			
-			
-			 //graph.addNode(1);
-			 //var middle = graph.getNode(1);
-             // middle.isPinned = true;
-			 
-			 //SEARCH CODE. DOES NOT WAIT
-			 var neoid = window.location.search.substring(1).split("=")[1];
-			 if ( neoid != "") {
-			 	neoid = neoid.split('+').join(' ');
-			 	console.log(neoid);
-				$( "#neoid" ).val(neoid);
-				search(neoid);
-			  };
-			 
-				
-			 
-            
         }
 		
+
+
 		  $( document ).ready(function() {
+		  	initial();
         $( "#button" ).click(function( event ) {
-            search();
+        	var neoid = window.location.search.substring(1).split("=")[1];
+        	$( "#neoid" ).val(neoid);
+        	console.log(neoid);
+		 	neoid = neoid.split('+').join(' ');
+		 	console.log(neoid);
+			
+			search(neoid);
 			event.preventDefault();
         });
     });
 	
+	function initial(){
+		//alert( "The link will no longer take you to jquery.com" );
+            
+			var restServerURL = db_url;
+			//var query = "START root=node(*) where has(root.name) and root.name ='"+temp+"' RETURN ID(root),root.name ";
+			var query = "MATCH (n:`genre`) RETURN n LIMIT 25"
+			console.log(query);
+			$.ajax({
+				type:"POST",
+				url: restServerURL + "/cypher",
+				accepts: "application/json",
+				dataType: "json",
+				
+				headers: { 
+				  "X-Stream": "true"    
+				},
+				data:{ "query" : query, },
+				success: function(data, textStatus, jqXHR){
+					console.log(data);
+				 
+
+				 graph.addNode(-1, {'name': 'Genres'});
+				 var nodes = data['data']
+				 console.log(nodes);
+				 for (i = 0; i < nodes.length; i++)
+				 {
+				 	var id = nodes[i][0]['self'].split("/")[6];
+				 	//console.log(nodes[i]);
+				 	graph.addNode(id, nodes[i][0]['data']);
+				 	graph.addLink(-1, id);
+				 }
+
+				},
+				
+				error: function(jqXHR, textStatus, errorThrown){
+				 //alert(errorThrown);
+				 console.log(textStatus);
+				}
+
+			  });//end of ajax
+		}
+
+	
+	
+
 	function search(q){
 		//alert( "The link will no longer take you to jquery.com" );
             
 			var restServerURL = db_url;
 			//var query = "START root=node(*) where has(root.name) and root.name ='"+temp+"' RETURN ID(root),root.name ";
-			var query = "MATCH (n:`/people/person`) where n.name='"+q+"' RETURN n LIMIT 25"
+			var query = "MATCH (n:`/people/person`) where n.name='"+q+"' RETURN n LIMIT 25";
 			console.log(query);
 			$.ajax({
 				type:"POST",
@@ -320,6 +355,7 @@
 
 	
 	}
+	
 		
 		
     </script>
