@@ -11,3 +11,7 @@ fetch contains code to get data
 data is used to log certain types of queries to understand structure of api
 
 views is old code that will be phased out. From Django
+
+Build with pip install -r requirements.txt
+
+runserver with python http/app.py
