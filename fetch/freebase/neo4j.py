@@ -7,6 +7,7 @@ import requests
 
 db_url = 'http://129.105.70.12:7474/db/data/cypher';
 
+
 def buildNodes():
 	session = cypher.Session(db_url)
 	tx = session.create_transaction()
