@@ -24,7 +24,7 @@
 				 springLength : 150,
 				 springCoeff : 0.0011,
 				 dragCoeff : 0.00,
-				 gravity : -10
+				 gravity : -1
 			 });
             // Step 2. We add nodes and edges to the graph:
            
@@ -78,7 +78,8 @@
                 });
 				
 				$(ui).dblclick(function() { // mouse over
-					getClusters(node);
+					//getClusters(node);
+					getLinked(node);
                     //getOutRelation(node.id, true);
 					//getInRelation(node.id, true);
                 });
@@ -180,6 +181,53 @@
 				//graph.addLink(nodeId, localId);
             	return clusters
             }
+
+            getLinked = function(rootNode) {
+            	console.log("Linked");
+            	var restServerURL = db_url;
+				//var query = "START root=node(*) where has(root.name) and root.name ='"+temp+"' RETURN ID(root),root.name ";
+				console.log(rootNode);
+				var query = "MATCH (a)-[]-(b) where b.mid='"+rootNode['data']['mid']+"' RETURN a LIMIT 25"
+				console.log(query);
+				$.ajax({
+					type:"POST",
+					url: restServerURL + "/cypher",
+					accepts: "application/json",
+					dataType: "json",
+					
+					headers: { 
+					  "X-Stream": "true"    
+					},
+					data:{ "query" : query, },
+					success: function(data, textStatus, jqXHR){
+						console.log(data);
+					 
+
+					 try {
+					 	var nodes = data['data'];
+					 }
+					 catch(err) {
+					 	var nodes=[];
+					 }
+					 
+					 for (i = 0; i < nodes.length; i++)
+					 {
+					 	console.log('hi')
+					 	var id = nodes[i][0]['self'].split("/")[6];
+					 	//console.log(nodes[i]);
+					 	graph.addNode(id, nodes[i][0]['data']);
+					 	graph.addLink(rootNode.id, id);
+					 }
+
+					},
+					
+					error: function(jqXHR, textStatus, errorThrown){
+					 //alert(errorThrown);
+					 console.log(textStatus);
+					}
+
+				  });//end of ajax
+            }
 				
 			getOutRelation = function(nodeId, isOn) {
                   // alert("getAllrelation");
@@ -279,7 +327,6 @@
 			var restServerURL = db_url;
 			//var query = "START root=node(*) where has(root.name) and root.name ='"+temp+"' RETURN ID(root),root.name ";
 			var query = "MATCH (n:`genre`) RETURN n LIMIT 25"
-			console.log(query);
 			$.ajax({
 				type:"POST",
 				url: restServerURL + "/cypher",
