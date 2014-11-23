@@ -5,7 +5,46 @@ import pprint
 api_key = open(".freebase_api_key").read()
 service_url = 'https://www.googleapis.com/freebase/v1/mqlread'
 
+def getGenres():
+	query = [{
+	'type': '/music/genre', 
+	'/common/topic/image' : [{"id": None, 'limit': 1}],
+	"key": {"namespace": "/wikipedia/en_id", "value": None}, 
+	'name': None, 
+	'mid': None, 
+	'id': None,
+	'artists': [{'name': None, 'mid':None}], 
+	'limit': 5
+	}]
 
+	params = {'query': json.dumps(query), 'key': api_key}
+	
+	url = service_url + '?' + urllib.urlencode(params)
+
+	response = urllib.urlopen(url).read()
+	#print response
+
+	data = json.loads(response)
+	data = data['result']#[0]
+	
+
+	return data
+
+
+def getArtist(name):
+	#query = [{"name": name, "*":[{}], "id": {}, "mid": {},"active_start": None, "genre": [], "key": {"namespace": "/wikipedia/en_id", "value": None}, "type":"/music/artist"}]#, "b:type": "/common/topic"}]
+	query = [{"name": name, 'type': '/music/recording', 'name': None, 'id': None }]
+
+	params = {'query': json.dumps(query), 'key': api_key}
+	
+	url = service_url + '?' + urllib.urlencode(params)
+
+	response = urllib.urlopen(url).read()
+	print response
+
+	data = json.loads(response)
+	data = data['result'][0]
+	print pprint.pprint(data)
 
 def getArtists(limit):
 	query = [{"name": {}, "id": {}, "a:type":"/people/person", "b:type": "/common/topic", "limit": limit}]
@@ -29,8 +68,8 @@ def getArtists(limit):
 
 def resolveNode(name):
 	try:
-		query = [{"name": name, "id": {}, "mid": {}, "key": {"namespace": "/wikipedia/en_id", "value": None}, "a:type":"/people/person", "b:type": "/common/topic"}]
-
+		#query = [{"name": name, "id": {}, "mid": {}, "key": {"namespace": "/wikipedia/en_id", "value": None}, "a:type":"/people/person", "b:type": "/common/topic"}]
+		query = [{"name": name, "id": {}, "peers": [], "mid": {}, "key": {"namespace": "/wikipedia/en_id", "value": None}, "a:type":"/people/person", "b:type": "/common/topic"}]
 		params = {'query': json.dumps(query), 'key': api_key}
 		
 		url = service_url + '?' + urllib.urlencode(params)
@@ -96,8 +135,9 @@ def getSongs(mid):
 	#except:
 		return []
 
+
 #getLabels('/m/05bmb_')
-print pprint.pprint(getSongs('/m/01vsy3q'))
+#print pprint.pprint(getSongs('/m/01vsy3q'))
 
 '''
 getMQL([{

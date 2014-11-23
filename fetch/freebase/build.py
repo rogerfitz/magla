@@ -2,14 +2,33 @@ import json
 import urllib
 import pprint
 from neo4j import buildNode, buildRel, getInfluences
-from mql import resolveNode, getLabels
+from mql import resolveNode, getLabels, getArtist, getGenres
 import sys, traceback
 
-api_key = open("../fetch/freebase/.freebase_api_key").read()
+api_key = open(".freebase_api_key").read()
 service_url = 'https://www.googleapis.com/freebase/v1/topic'
+
+def buildGenres():
+	genres = getGenres()
+	for g in genres:
+		data = {
+		'id': g['id'],
+		'img_url': 'https://usercontent.googleapis.com/freebase/v1/image/'+str(g['id']),
+		'wiki_url': 'http://en.wikipedia.org/wiki/index.html?curid='+g['key']['value'],
+		'name': g['name'],
+		'mid': g['mid'],
+		'type': g['type'],
+		}
+		labels = [g['type'], 'genre']
+		buildNode(labels, data)
+		
+	print pprint.pprint(genres)
 
 def buildTopic(name):
 	pNode, pLabel = resolveNode(name)
+	print pNode
+	#print getInfluences(pNode['mid'])
+	'''
 	if pNode==-1:
 		buildNode(pLabel, pNode)
 
@@ -17,14 +36,14 @@ def buildTopic(name):
 
 		params = {
 		  'key': api_key,
-		  #'filter': '/influence',
+		  'filter': '/influence',
 		  'domain': 'people',
 		}
 		url = service_url + topic_id + '?' + urllib.urlencode(params)
 		response = json.loads(urllib.urlopen(url).read())
 
 		print response
-		'''
+		
 		for prop in response['property']:
 			rel_type = prop
 			try:
@@ -62,4 +81,5 @@ def buildTopic(name):
 				#print pprint.pprint(response['property'][prop])
 				#print pprint.pprint(response['property'][prop]['values'])
 		'''
-buildTopic('Jimi Hendrix')
+#getArtist('Jimi Hendrix')
+buildGenres()
