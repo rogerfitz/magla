@@ -1,3 +1,4 @@
+from . import *
 import json
 import urllib
 import pprint
@@ -5,7 +6,6 @@ from neo4j import buildNode, buildRel, getInfluences
 from mql import resolveNode, getLabels, getArtist, fromGenres
 import sys, traceback
 
-api_key = open(".freebase_api_key").read()
 service_url = 'https://www.googleapis.com/freebase/v1/topic'
 
 def buildFromGenres():
@@ -97,4 +97,5 @@ def buildTopic(name):
 				#print pprint.pprint(response['property'][prop]['values'])
 		'''
 #getArtist('Jimi Hendrix')
-buildFromGenres()
+#buildFromGenres()
+print api_key

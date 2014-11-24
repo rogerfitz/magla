@@ -1,3 +1,4 @@
+from . import *
 import json
 import urllib
 import pprint
@@ -5,7 +6,7 @@ import sys
 from shitjson import properDump
 
 
-api_key = open(".freebase_api_key").read()
+#api_key = open(".freebase_api_key").read()
 service_url = 'https://www.googleapis.com/freebase/v1/search'
 
 def getArtists(query, limit):

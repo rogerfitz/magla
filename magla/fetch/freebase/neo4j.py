@@ -1,3 +1,4 @@
+from . import *
 from py2neo import cypher, neo4j
 import simplejson as json
 import search
