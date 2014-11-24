@@ -11,7 +11,7 @@
     <script type="text/javascript">
 
     	var db_url='{{ db_url }}/db/data'//Flask var
-    	console.log(db_url)
+    	
         var graph;
 		var renderer
 		
@@ -25,7 +25,7 @@
 				 springLength : 150,
 				 springCoeff : 0.0011,
 				 dragCoeff : 0.00,
-				 gravity : -1
+				 gravity : -10
 			 });
             // Step 2. We add nodes and edges to the graph:
            
@@ -63,16 +63,29 @@
             renderer.run();
 				
 			graphics.node(function(node) {
+				node.expanded = 0;
+
 				var ui = Viva.Graph.svg('g'),
                   // Create SVG text element with user id as content
-                  svgText = Viva.Graph.svg('text').attr('y', '-4px').text(node.data['name']),
+                  svgText = Viva.Graph.svg('text').attr('y', '-0px').text(node.data['name']),
+                  
                   img = Viva.Graph.svg('image')
                      .attr('width', nodeSize)
                      .attr('height', nodeSize)
-                     .link(node['data']['img_url']);
+                  	 
+                     //.link(node['data']['img_url']);
+                  
+                  if (typeof(node['data']['img_url']) != 'undefined')
+                  {
+                  	img.link(node['data']['img_url']);
+               		ui.append(img);
+               	  }
+
+
+                  
+                  	
                      	//'http://assets.rollingstone.com/assets/images/list/2b1d08ea01d2714a82785574e1434b4dcbecbc53.jpg')
-              ui.append(svgText);
-              ui.append(img);	 
+              ui.append(svgText);	 
 					 
                 $(ui).click(function() { // mouse over
                     getProperties(node.id, true);
@@ -80,7 +93,20 @@
 				
 				$(ui).dblclick(function() { // mouse over
 					//getClusters(node);
-					getLinked(node);
+					console.log(node.expanded)
+					if (node.expanded === 0)
+					{
+						node.expanded = 1;
+						getLinked(node);
+					}
+					else
+					{
+						node.expanded = 0;
+						remove = getOutgoing(node)
+						remove.forEach(function(item){
+							graph.removeNode(item); 
+						});
+					}
                     //getOutRelation(node.id, true);
 					//getInRelation(node.id, true);
                 });
@@ -170,6 +196,18 @@
             
             // Marker should be defined only once in <defs> child element of root <svg> element:
             
+            getOutgoing = function(node) {
+            	var remove = []
+				for (var i=0; i<node.links.length; i++)
+				{
+					var linkedNode = node.links[i]
+					if (linkedNode.fromId === node.id)
+				  		remove.push(linkedNode.toId)
+				};
+				return remove
+            }
+
+
             getClusters = function(node) {
             	alert('hi');
             	//if artist
@@ -183,6 +221,8 @@
             	return clusters
             }
 
+            //Outgoing rel's. Return list
+            //addNodes function whichtakes in links
             getLinked = function(rootNode) {
             	console.log("Linked");
             	var restServerURL = db_url;
@@ -213,7 +253,7 @@
 					 
 					 for (i = 0; i < nodes.length; i++)
 					 {
-					 	console.log('hi')
+					 	
 					 	var id = nodes[i][0]['self'].split("/")[6];
 					 	//console.log(nodes[i]);
 					 	graph.addNode(id, nodes[i][0]['data']);
@@ -342,7 +382,7 @@
 					console.log(data);
 				 
 
-				 graph.addNode(-1, {'name': 'Genres'});
+				 graph.addNode('-1', {'name': 'Genres'});
 				 var nodes = data['data']
 				 console.log(nodes);
 				 for (i = 0; i < nodes.length; i++)
@@ -350,7 +390,7 @@
 				 	var id = nodes[i][0]['self'].split("/")[6];
 				 	//console.log(nodes[i]);
 				 	graph.addNode(id, nodes[i][0]['data']);
-				 	graph.addLink(-1, id);
+				 	graph.addLink('-1', id);
 				 }
 
 				},
