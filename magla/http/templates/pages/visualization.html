@@ -10,7 +10,8 @@
   <script src="/static/js/libs/jquery-ui.js"></script>
     <script type="text/javascript">
 
-    	var db_url='http://129.105.70.12:7474/db/data'//Flask var
+    	var db_url='{{ db_url }}/db/data'//Flask var
+    	console.log(db_url)
         var graph;
 		var renderer
 		

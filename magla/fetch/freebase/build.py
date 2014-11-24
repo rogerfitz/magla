@@ -97,5 +97,5 @@ def buildTopic(name):
 				#print pprint.pprint(response['property'][prop]['values'])
 		'''
 #getArtist('Jimi Hendrix')
-#buildFromGenres()
-print api_key
+#buildTopic('Jimi Hendrix')
+buildFromGenres()

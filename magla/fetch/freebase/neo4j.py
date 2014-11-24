@@ -6,11 +6,8 @@ from helpers import labelList
 from shitjson import properDump
 import requests
 
-db_url = 'http://129.105.70.12:7474/db/data/cypher';
-
-
 def buildNodes():
-	session = cypher.Session(db_url)
+	session = cypher.Session(cypher_url)
 	tx = session.create_transaction()
 
 	artist=search.getArtists('blues', 200)
@@ -35,7 +32,7 @@ def queue():
 
 #Takes in label list and data dict. Data should be cleaned
 def buildNode(labels, data):
-	session = cypher.Session(db_url)
+	session = cypher.Session(cypher_url)
 	tx = session.create_transaction()
 	if len(data.keys()) > 2: #hackish, might need to retrieve object before this logic or use multiple sets instead of 
 		query = 'MERGE (n {mid: "'+data['mid']+'"}) ON MATCH set n='+properDump(data)+' ON MATCH set n'+labelList(labels)+' ON CREATE set n='+properDump(data)+' ON CREATE set n'+labelList(labels)+'return n;'
@@ -47,7 +44,7 @@ def buildNode(labels, data):
 	tx.commit()
 
 def buildRel(node1, node2, rel_type):
-	session = cypher.Session(db_url)
+	session = cypher.Session(cypher_url)
 	tx = session.create_transaction()
 	if (node1['mid']==-1 and node2['mid']==-1):
 		query = 'MATCH (a { name: "'+node1['name']+'"}) MATCH (b { name: "'+node2['name']+'"}) CREATE UNIQUE (a)-[:`'+rel_type+'`]-(b);'
@@ -65,7 +62,7 @@ def buildRel(node1, node2, rel_type):
 	
 
 def getOrCreate():
-	graph_db = neo4j.GraphDatabaseService(db_url)
+	graph_db = neo4j.GraphDatabaseService(cypher_url)
 
 	artist=search.getArtists('',100)
 
@@ -78,7 +75,7 @@ def getOrCreate():
 def getInfluences(mid):
 	rels = getRels(mid)
 
-	session = cypher.Session(db_url)
+	session = cypher.Session(cypher_url)
 	tx = session.create_transaction()
 
 	inf = []
@@ -96,7 +93,7 @@ def getInfluences(mid):
 
 def getRels(mid):
 	mid='/m/01vsy3q'
-	session = cypher.Session(db_url)
+	session = cypher.Session(cypher_url)
 	tx = session.create_transaction()
 	
 
@@ -104,7 +101,7 @@ def getRels(mid):
 
 	'''
 	headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
-	response = requests.post(db_url, params={'query': query}, headers=headers)
+	response = requests.post(cypher_url, params={'query': query}, headers=headers)
 	print response
 	'''
 

@@ -8,6 +8,8 @@ import logging
 from logging import Formatter, FileHandler
 from forms import *
 import os
+#from . import *
+import config
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -44,7 +46,7 @@ def login_required(test):
 @app.route('/')
 def home():
     #return render_template('pages/home.html')
-    return render_template('pages/visualization.html')
+    return render_template('pages/visualization.html', db_url=config.db_url)
 
 
 @app.route('/about')

@@ -3,7 +3,6 @@ import simplejson as json
 import urllib
 import pprint
 
-#api_key = open(".freebase_api_key").read()
 service_url = 'https://www.googleapis.com/freebase/v1/mqlread'
 
 def fromGenres():
@@ -144,6 +143,7 @@ def getSongs(mid):
 
 #getLabels('/m/05bmb_')
 #print pprint.pprint(getSongs('/m/01vsy3q'))
+#print fromGenres()
 
 '''
 getMQL([{
