@@ -46,7 +46,7 @@ def login_required(test):
 @app.route('/')
 def home():
     #return render_template('pages/home.html')
-    return render_template('pages/visualization.html', db_url=config.db_url)
+    return render_template('pages/index.html', db_url=config.db_url)
 
 
 @app.route('/about')

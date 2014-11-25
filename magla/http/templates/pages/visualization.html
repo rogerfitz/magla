@@ -23,9 +23,9 @@
             graph = Viva.Graph.graph();
 			var layout = Viva.Graph.Layout.forceDirected(graph, {
 				 springLength : 150,
-				 springCoeff : 0.0011,
+				 springCoeff : 0.001,
 				 dragCoeff : 0.00,
-				 gravity : -10
+				 gravity : -5
 			 });
             // Step 2. We add nodes and edges to the graph:
            
@@ -65,27 +65,33 @@
 			graphics.node(function(node) {
 				node.expanded = 0;
 
-				var ui = Viva.Graph.svg('g'),
-                  // Create SVG text element with user id as content
-                  svgText = Viva.Graph.svg('text').attr('y', '-0px').text(node.data['name']),
+				var ui = Viva.Graph.svg('g')
+                  
+                  
+                  
+                  
+                  if (typeof(node['data']['img_url']) != 'undefined')
+                  {
+                  	svgText = Viva.Graph.svg('text').attr('y', '-0px').text(node.data['name']),
                   
                   img = Viva.Graph.svg('image')
                      .attr('width', nodeSize)
                      .attr('height', nodeSize)
-                  	 
-                     //.link(node['data']['img_url']);
-                  
-                  if (typeof(node['data']['img_url']) != 'undefined')
-                  {
                   	img.link(node['data']['img_url']);
                		ui.append(img);
+               		ui.append(svgText);
+               	  }
+               	  else
+               	  {
+               	  	svgText = Viva.Graph.svg('text').text(node.data['name']);
+               	  	ui.append(svgText);
                	  }
 
 
                   
                   	
                      	//'http://assets.rollingstone.com/assets/images/list/2b1d08ea01d2714a82785574e1434b4dcbecbc53.jpg')
-              ui.append(svgText);	 
+              	 
 					 
                 $(ui).click(function() { // mouse over
                     getProperties(node.id, true);
