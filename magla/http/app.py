@@ -48,6 +48,9 @@ def home():
     #return render_template('pages/home.html')
     return render_template('pages/index.html', db_url=config.db_url)
 
+@app.route('/test')
+def test():
+    return render_template('pages/test.html')
 
 @app.route('/about')
 def about():

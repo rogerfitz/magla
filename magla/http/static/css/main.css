@@ -10,12 +10,31 @@ body {
   top: 0;
 }
 
-#eat {
-  position: absolute;
-  left: 1em;
-  top: 1em;
-  font-size: 1em;
-  z-index: -1;
-  color: #c88;
+
+.qtip-wiki{
+    max-width: 385px;
+    max-height: 300px;
 }
 
+.qtip-wiki p{
+    margin: 0 0 6px;
+}
+
+.qtip-wiki h1{
+    font-size: 20px;
+    line-height: 1.1;
+    margin: 0 0 5px;
+}
+
+.qtip-wiki img{
+    float: right;
+    margin: 10px 10px 10px 0;
+}
+
+.qtip-wiki .info{
+    overflow: hidden;
+}
+
+.qtip-wiki p.note{
+    font-weight: 700;
+}

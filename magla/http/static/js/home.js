@@ -2,9 +2,25 @@ $(function(){ // on dom ready
 
 
   console.log()
+  
+  var tooltips = $('#cy').qtip({
+         id: 'sampletooltip',
+    content: {
+        text: 'Hi. I am a sample tooltip!',
+        title: 'Sample tooltip'
+    }
+  });
+  var qtipApi = tooltips.qtip('api');
+  qtipApi.toggle(true);
+
+  console.log(qtipApi.get('content.text'));
+  qtipApi.set('position.target', [500,500]);
 
 
+  console.log(qtipApi.get('position'));
 
+  
+ 
   var cy = cytoscape({
     container: document.getElementById('cy'),
     
@@ -70,6 +86,75 @@ $(function(){ // on dom ready
     }
   });
 
+cy.on('mouseover','node', function(event){
+  console.log(this);
+  var x=event.cyPosition.x;
+  var y=event.cyPosition.y;
+  console.log(x)       
+  console.log(this)          
+  console.log(this.data().wiki_url);
+
+  $("#cy").qtip({
+    content: {
+        text: function(event2, api) {
+            $.ajax({
+                //url: 'http://en.wikipedia.org/wiki/index.html?curid=294091'//this.data().wiki_url // Use href attribute as URL
+                url: 'http://qtip2.com/demos/data/owl'
+            })
+            .then(function(content) {
+                // Set the tooltip content upon successful retrieval
+                api.set('content.text', content);
+                console.log(content)
+            }, function(xhr, status, error) {
+                // Upon failure... set the tooltip content to error
+                api.set('content.text', status + ': ' + error);
+            });
+
+            return 'Loading...'; // Set some initial text
+        }
+    },
+    position: {
+        viewport: $(window),
+        target: [x+3, y+3],
+        adjust: 
+        {
+          x: 100,
+          y:7
+        }
+    },
+    style: 'qtip-wiki',
+    
+    show: 
+    {
+      delay: 0,
+      event: false,
+      ready: true,
+      effect:false
+    },
+    /*
+    position: 
+    {
+      my: 'bottom center',
+      at: 'top center',
+
+      target: [x+3, y+3],
+      adjust: 
+      {
+        x: 100,
+        y:7
+      }
+
+    },
+    hide: 
+    {
+      fixed: true,
+      event: false,
+      inactive: 2000
+    },
+  */
+  });
+});
+
   cy.on('clk', 'node', function(){
     console.log(this.data());
   })
@@ -95,11 +180,13 @@ $(function(){ // on dom ready
     });
   });
 
+  //Need to rewrite all event codes. 
+  //Normalized events cause experience to suffer for both PC and mobile. Or as maxkfranz would say "both function equally well"
   cy.on('cxttap', 'node', function(){
-    console.log('rght');
     window.open(this.data().wiki_url, '_blank');
   });
 cy.panningEnabled(true)
+
 
 }); // eof
 
