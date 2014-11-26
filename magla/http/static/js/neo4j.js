@@ -51,9 +51,73 @@ neo4j.fromLabel = function(label)
 		}
 	  });//end of ajax
 	return res
-		
-		
 }
+
+neo4j.getChildren = function(pNode)
+{
+	var position = pNode.position()
+	position.x+=1;
+	position.y+=1;
+
+	console.log(pNode.data().id)
+	
+
+	var query = "MATCH (a)-[]-(b) where b.id='"+pNode.data().id+"' RETURN a LIMIT 5"
+	var res = ''
+	$.ajax({
+		type:"POST",
+		url: cypher_url,
+		accepts: "application/json",
+		dataType: "json",
+		async: false,
+		
+		headers: { 
+		  "X-Stream": "true"    
+		},
+		data:{ "query" : query, },
+		success: function(data, textStatus, jqXHR){
+
+			var nodes = prepNodesForInsert(data, position);
+			var edges = prepEdgesForInsert(pNode.data().id, nodes);
+
+
+			res = {nodes: nodes, edges: edges}//nodes.concat(edges);
+		},
+		
+		error: function(jqXHR, textStatus, errorThrown){
+		 //alert(errorThrown);
+		 console.log(textStatus);
+		 return(textStatus)
+		}
+	  });//end of ajax
+	return res
+	
+}
+
+function prepNodesForInsert(data, position)
+{
+	var nodes = []
+	data.data.forEach(function(node) {
+		nodes.push({ group: 'nodes', 'data': node[0].data});//, position: position })
+		position.x+=100;
+		console.log(position)
+
+		position.y+=100;
+	})
+	return nodes
+}
+
+function prepEdgesForInsert(id, nodes)
+{
+	var edges = []
+	nodes.forEach(function(node){
+		edges.push({ 'group': 'edges', data: {source: id, target: node.data.id }})
+
+	})
+	return edges;
+}
+
+
 
 function nodesToCyto(data)
 {
@@ -73,3 +137,4 @@ function elesFromRoot(id, nodes)
 	})
 	return edges;
 }
+
