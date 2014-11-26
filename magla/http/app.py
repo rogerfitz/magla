@@ -10,6 +10,7 @@ from forms import *
 import os
 #from . import *
 import config
+import requests
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -61,6 +62,17 @@ def about():
 def login():
     form = LoginForm(request.form)
     return render_template('forms/login.html', form=form)
+
+#need to require a csrf to ensure website endpoint not abused
+@app.route('/get')
+def get():
+    try:
+        url = request.args['url']
+        response = requests.get(url)
+        return response.content
+    except:
+        return 'Error loading', url
+
 
 
 @app.route('/register')

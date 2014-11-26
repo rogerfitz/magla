@@ -92,18 +92,26 @@ cy.on('mouseover','node', function(event){
   var y=event.cyPosition.y;
   console.log(x)       
   console.log(this)          
-  console.log(this.data().wiki_url);
+  console.log('/get?url='+this.data().wiki_url);
+  var url = '/get?url='+this.data().wiki_url
+  url = '/get?url=https://www.youtube.com/watch?v=a3HemKGDavw'
+  var videoID = url.match(/(youtu\.be\/|&*v=|\/v\/|\/embed\/)+([A-Za-z0-9\-_]{5,11})/);
+  
+  videoID=videoID[2]
+  console.log(videoID)
 
   $("#cy").qtip({
+    content: $('<div />', { id: videoID }),
+    /*
     content: {
         text: function(event2, api) {
             $.ajax({
-                //url: 'http://en.wikipedia.org/wiki/index.html?curid=294091'//this.data().wiki_url // Use href attribute as URL
-                url: 'http://qtip2.com/demos/data/owl'
+                url: url
+                //url: 'http://qtip2.com/demos/data/owl'
             })
             .then(function(content) {
                 // Set the tooltip content upon successful retrieval
-                api.set('content.text', content);
+                api.set('content.text', '<iframe src='+url+'>');
                 console.log(content)
             }, function(xhr, status, error) {
                 // Upon failure... set the tooltip content to error
@@ -113,16 +121,46 @@ cy.on('mouseover','node', function(event){
             return 'Loading...'; // Set some initial text
         }
     },
+    */
     position: {
         viewport: $(window),
         target: [x+3, y+3],
         adjust: 
         {
-          x: 100,
+          x: 10,
           y:7
         }
     },
-    style: 'qtip-wiki',
+    style: 
+    {
+      classes: 'qtip-youtube',
+      width: 295,
+    },
+    events: {
+            render: function(event, api) {
+                new YT.Player(videoID, {
+                    playerVars: {
+                        autoplay: 1,
+                        enablejsapi: 1,
+                        origin: document.location.host
+                    },
+                    origin: document.location.host,
+                    height: 180,
+                    width: 275,
+                    videoId: videoID,
+                    events: {
+                        'onReady': function(e) {
+                          
+                            api.player = e.target;
+                            ///api.player.mute();
+                        },
+                    }
+                });
+            },
+            hide: function(event, api){
+                api.player && api.player.stopVideo();
+            },
+          },
     
     show: 
     {
@@ -131,11 +169,14 @@ cy.on('mouseover','node', function(event){
       ready: true,
       effect:false
     },
+
+    hide: 'unfocus'
+                
+    
     /*
     position: 
     {
-      my: 'bottom center',
-      at: 'top center',
+
 
       target: [x+3, y+3],
       adjust: 
