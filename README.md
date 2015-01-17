@@ -1,6 +1,6 @@
 MAGLA 
 =====
-A Graph Visualization Website (Private)
+A Graph Visualization Website
 
 old-node is old Node.js that is no longer in use.
 
