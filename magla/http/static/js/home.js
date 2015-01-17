@@ -1,8 +1,74 @@
+function playVideo(node)
+{
+  var x=node.position().x;
+  var y=node.position().y;
+  console.log('/get?url='+node.data().wiki_url);
+  var url = '/get?url='+node.data().wiki_url
+
+  //Video
+  url = '/get?url=https://www.youtube.com/watch?v=a3HemKGDavw'
+  var videoID = url.match(/(youtu\.be\/|&*v=|\/v\/|\/embed\/)+([A-Za-z0-9\-_]{5,11})/);
+  
+  videoID=videoID[2]
+
+  $("#cy").qtip({
+    content: $('<div />', { id: videoID }),
+    position: {
+        viewport: $(window),
+        target: [1300, 50],
+        adjust: 
+        {
+          x: 5,
+          y:5,
+        }
+    },
+    style: 
+    {
+      classes: 'qtip-youtube',
+      tip: false,
+      width: 295,
+    },
+    events: {
+            render: function(event, api) {
+                new YT.Player(videoID, {
+                    playerVars: {
+                        autoplay: 1,
+                        enablejsapi: 1,
+                        origin: document.location.host
+                    },
+                    origin: document.location.host,
+                    height: 180,
+                    width: 275,
+                    videoId: videoID,
+                    events: {
+                        'onReady': function(e) {
+                          
+                            api.player = e.target;
+                            api.player.mute();
+                        },
+                    }
+                });
+            },
+            hide: function(event, api){
+                api.player && api.player.stopVideo();
+            },
+          },
+    
+    show: 
+    {
+      delay: 0,
+      event: false,
+      ready: true,
+      effect:false
+    },
+
+    hide: 'unfocus'
+                
+    });
+}
+
 $(function(){ // on dom ready
 
-
-  console.log()
-  
   var tooltips = $('#cy').qtip({
          id: 'sampletooltip',
     content: {
@@ -13,14 +79,6 @@ $(function(){ // on dom ready
   var qtipApi = tooltips.qtip('api');
   qtipApi.toggle(true);
 
-  console.log(qtipApi.get('content.text'));
-  qtipApi.set('position.target', [500,500]);
-
-
-  console.log(qtipApi.get('position'));
-
-  
- 
   var cy = cytoscape({
     container: document.getElementById('cy'),
     
@@ -37,6 +95,8 @@ $(function(){ // on dom ready
           'background-image': 'data(img_url)',
           'content': 'data(name)',//'Jimi Hendrix',
           'text-valign': 'bottom',
+          'z-index': 100,
+          
         })
       .selector('edge')
         .css({
@@ -63,18 +123,57 @@ $(function(){ // on dom ready
       padding: 5,
       edgeLength: 1,
       liveUpdate: true,
-    }
+    },
+    ready: function(){ 
+      //Change to custom HTML canvas element seperate from cytoscape universe. PIN to bottom of viewable canvas
+      cy.add({ group: "nodes", 
+        data: { id: "queue", img_url: 'http://' }, 
+        position: { x: 100, y: 100 }, 
+        css: {'background-color': 'blue', height: 125, width: 200, shape: 'roundrectangle', 'z-index': 0} })
+        }
   }); // cy init
+  cy.cxtmenu({
+            commands: [
+              {
+                content: '<span class="fa fa-play fa-2x"></span>',
+                select: function(){
+                  playVideo(this);
+                  console.log( this.id() );
+                }
+              },
+              {
+                content: '<span class="fa fa-plus fa-2x"></span>',
+                select: function(){
+                  var c = document.getElementById('cy')//.getContext("2d");
+                  var ctx = c.getContext('2d');
+                  ctx.fillStyle = "Red";
+                  ctx.fillRect(0,0,150,75);
+                  console.log( this.data('name') );
+                }
+              },
+              {
+                content: 'Position',
+                select: function(){
+                  console.log( this.position() );
+                }
+              }
+            ]
+          });
+  cy.panningEnabled(true)
+  
+  
     
-
+/*
   //custom dblClk because maxkfranz is a stupid fucking liberal
   var tappedBefore = null;
-  cy.on('click', function(event, b) {
+  cy.on('click', function(event) {
     var tappedNow = event.cyTarget;
+    var origEvent = event;
     var timer = setTimeout(function(){if (tappedBefore === tappedNow){
       //SINGLE CLICK
       tappedBefore = null;
-      tappedNow.trigger('clk');
+      console.log(origEvent);
+      tappedNow.trigger('clk', origEvent);
       }
     }, 300);
     if(tappedBefore === tappedNow) 
@@ -85,15 +184,21 @@ $(function(){ // on dom ready
       tappedBefore = tappedNow;
     }
   });
-
-cy.on('mouseover','node', function(event){
+*/
+/*
+//Video
+cy.on('click','node', function(event){
   console.log(this);
+  console.log('event');
+  console.log(event);
   var x=event.cyPosition.x;
   var y=event.cyPosition.y;
   console.log(x)       
   console.log(this)          
   console.log('/get?url='+this.data().wiki_url);
   var url = '/get?url='+this.data().wiki_url
+
+  //Video
   url = '/get?url=https://www.youtube.com/watch?v=a3HemKGDavw'
   var videoID = url.match(/(youtu\.be\/|&*v=|\/v\/|\/embed\/)+([A-Za-z0-9\-_]{5,11})/);
   
@@ -102,26 +207,6 @@ cy.on('mouseover','node', function(event){
 
   $("#cy").qtip({
     content: $('<div />', { id: videoID }),
-    /*
-    content: {
-        text: function(event2, api) {
-            $.ajax({
-                url: url
-                //url: 'http://qtip2.com/demos/data/owl'
-            })
-            .then(function(content) {
-                // Set the tooltip content upon successful retrieval
-                api.set('content.text', '<iframe src='+url+'>');
-                console.log(content)
-            }, function(xhr, status, error) {
-                // Upon failure... set the tooltip content to error
-                api.set('content.text', status + ': ' + error);
-            });
-
-            return 'Loading...'; // Set some initial text
-        }
-    },
-    */
     position: {
         viewport: $(window),
         target: [x+3, y+3],
@@ -172,33 +257,52 @@ cy.on('mouseover','node', function(event){
 
     hide: 'unfocus'
                 
-    
-    /*
-    position: 
-    {
-
-
-      target: [x+3, y+3],
-      adjust: 
-      {
-        x: 100,
-        y:7
-      }
-
-    },
-    hide: 
-    {
-      fixed: true,
-      event: false,
-      inactive: 2000
-    },
-  */
+    });
   });
-});
 
-  cy.on('clk', 'node', function(){
+  cy.on('mouseover', 'node', function(){
     console.log(this.data());
   })
+
+  cy.on('grab', 'node', function(event){
+    console.log(event)
+    var x=event.cyTarget.position.x;
+    var y=event.cyTarget.position.y;
+    console.log('drag');
+    var data = jQuery.extend(true, {},this.data())//Obj copy
+    data['id']+='.'
+    data['class']='clone'
+    data['z-index']=500
+    console.log(this.data())
+    console.log(data)
+    
+    cy.add({ group: "nodes", 
+        data: data, 
+        position: { x: x, y: y+10 }, 
+        })
+
+    cy.layout({
+      name: 'breadthfirst',
+      fit: false,
+      directed: true,
+      gravity: true,
+      avoidOverlap: true,
+      infinite: true,
+      animate: true,
+      stiffness: 0.001,
+      damping: .6,
+      padding: 5,
+      edgeLength: 1,
+      liveUpdate: false,
+    });
+    
+  })
+  //Need to rewrite all event codes. 
+  //Normalized events cause experience to suffer for both PC and mobile. Or as maxkfranz would say "both function equally well"
+  cy.on('cxttap', 'node', function(){
+    window.open(this.data().wiki_url, '_blank');
+  });
+
   cy.on('dblClk', 'node', function(){
     console.log('Get Children');
     var n = neo4j.getChildren(this);
@@ -220,14 +324,10 @@ cy.on('mouseover','node', function(event){
       repulsion: 10000,
     });
   });
+*/
 
-  //Need to rewrite all event codes. 
-  //Normalized events cause experience to suffer for both PC and mobile. Or as maxkfranz would say "both function equally well"
-  cy.on('cxttap', 'node', function(){
-    window.open(this.data().wiki_url, '_blank');
-  });
-cy.panningEnabled(true)
 
 
 }); // eof
+
 

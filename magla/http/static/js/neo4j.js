@@ -39,6 +39,7 @@ neo4j.fromLabel = function(label)
 
 			var nodes = nodesToCyto(data);
 			nodes.push({ data: { id: label, name: 'Genres', img_url : 'http://' } } )
+
 			var edges = elesFromRoot(label, nodes);
 
 			res = {'nodes': nodes, 'edges': edges};
@@ -123,6 +124,7 @@ function nodesToCyto(data)
 {
 	var nodes = []
 	data.data.forEach(function(node) {
+		node[0].data.img_url = 'http://assets.rollingstone.com/assets/images/story/jimi-hendrixs-early-recordings-as-a-sideman-to-get-proper-release-20140717/20140717-jimihendrix-x306-1405632285.jpg'
 		nodes.push({'data': node[0].data})
 	})
 	return nodes

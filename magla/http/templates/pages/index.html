@@ -3,14 +3,16 @@
 {% block content %}
 <meta id="db_url" data-db_url="{{ db_url }}">
 
-<div id="cy"
+<div id="cy">
 </div>
 
 {% endblock %}
 {% block script %}
   <script src="/static/js/libs/jquery-1.9.1.js"></script>
-  <script src="static/js/neo4j.js"></script>
+  <script src="/static/js/neo4j.js"></script>
   <script src="/static/js/libs/cytoscape.min.js"></script>
+  <script src="/static/js/libs/cytoscape-cxtmenu.js"></script>
+
   <!-- Layout's
   <script src="/static/js/libs/arbor.js"></script>
   <script src="/static/js/libs/arbor-tween.js"></script>
