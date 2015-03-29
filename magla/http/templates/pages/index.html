@@ -3,23 +3,96 @@
 {% block content %}
 <meta id="db_url" data-db_url="{{ db_url }}">
 
-<div id="cy">
-</div>
+<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+    <div id="player"></div>
+    <div id="controls" class="text-center">
+    <a onclick="playVideo();"> <span class="fa fa-play fa-4x"></span></a>
+    <br>
+    <a onclick="prevVideo();"><span class="fa fa-step-backward fa-4x"></span></a>
+    <a onclick="pauseVideo();"><span class="fa fa-pause fa-4x"></span></a>
+    <a onclick="nextVideo();"><span class="fa fa-step-forward fa-4x"></span></a>
+    </div>
+    <script>
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement('script');
 
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 3. This function creates an <iframe> (and YouTube player)
+      //    after the API code downloads.
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: '480',
+          width: '640',
+          videoId: 'e-ORhEE9VVg',
+	  autohide: '0',
+	  loop: '1',
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+
+      // 4. The API will call this function when the video player is ready.
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+
+      // 5. The API calls this function when the player's state changes.
+      //    The function indicates that when playing a video (state=1),
+      //    the player should play for six seconds and then stop.
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.ENDED) {
+          nextVideo();
+        }
+      }
+	
+	function playVideo(){
+	player.playVideo();
+	}
+	function pauseVideo() {
+	player.pauseVideo();
+	}
+	function prevVideo() {
+	player.loadVideoId('e-ORhEE9VVg');
+	}
+	function nextVideo() {
+	$.ajax({
+			type:"GET",
+			url: "/api",
+			accepts: "application/json",
+			dataType: "json",
+		
+			headers: { 
+			  "X-Stream": "true"    
+			},
+			data: player.getVideoData(),
+			success: function(data, textStatus, jqXHR){
+				console.log(data.video_id);
+				player.loadVideoById(data.video_id);
+			},
+		
+			error: function(jqXHR, textStatus, errorThrown){
+			 //alert(errorThrown);
+			 console.log(textStatus);
+			 return(textStatus)
+			}
+		  });//end of ajax
+	}
+      function stopVideo() {
+        player.stopVideo();
+      }
+    </script>
+</script>
 {% endblock %}
 {% block script %}
   <script src="/static/js/libs/jquery-1.9.1.js"></script>
   <script src="/static/js/neo4j.js"></script>
-  <script src="/static/js/libs/cytoscape.min.js"></script>
-  <script src="/static/js/libs/cytoscape-cxtmenu.js"></script>
-
-  <!-- Layout's
-  <script src="/static/js/libs/arbor.js"></script>
-  <script src="/static/js/libs/arbor-tween.js"></script>
-  <script src="/static/js/libs/cola.v3.min.js"></script>
-  <script src="/static/js/libs/springy.js"></script>
-  -->
   <script src="/static/js/libs/jquery.qtip.min.js"></script>
   <script type="text/javascript" src="http://www.youtube.com/player_api"></script>
-<script src="/static/js/home.js"></script>
+<script src="/static/js/plain.js"></script>
 {% endblock %}

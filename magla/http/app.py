@@ -2,7 +2,7 @@
 # Imports
 #----------------------------------------------------------------------------#
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 # from flask.ext.sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
@@ -11,6 +11,7 @@ import os
 #from . import *
 import config
 import requests
+from oauth2client.tools import argparser
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -73,6 +74,14 @@ def get():
     except:
         return 'Error loading', url
 
+
+#need to require a csrf to ensure website endpoint not abused
+@app.route('/api', methods=['GET'])
+def api():
+	from youtube import getTop
+	#q = request.args['author']
+	options = {'video_id': request.args['video_id']}
+	return jsonify({"video_id": getTop(options)})
 
 
 @app.route('/register')

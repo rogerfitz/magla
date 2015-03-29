@@ -38,3 +38,13 @@ body {
 .qtip-wiki p.note{
     font-weight: 700;
 }
+
+#controls {
+  ;
+}
+
+.fa {
+cursor: pointer;
+}
+
+iframe { display: block; margin: 0 auto; }
