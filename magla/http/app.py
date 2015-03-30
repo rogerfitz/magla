@@ -12,6 +12,7 @@ import os
 import config
 import requests
 from oauth2client.tools import argparser
+import youtube
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -45,14 +46,14 @@ def login_required(test):
 #----------------------------------------------------------------------------#
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    #return render_template('pages/home.html')
-    return render_template('pages/index.html', db_url=config.db_url)
-
-@app.route('/test')
-def test():
-    return render_template('pages/test.html')
+	#return render_template('pages/home.html')
+	if request.method == 'POST':
+		print request.form
+		options = {'q': request.form['q']}
+		return jsonify({"video_id": youtube.getFromSearch(options)})
+	return render_template('pages/index.html', db_url=config.db_url)
 
 @app.route('/about')
 def about():
@@ -78,10 +79,9 @@ def get():
 #need to require a csrf to ensure website endpoint not abused
 @app.route('/api', methods=['GET'])
 def api():
-	from youtube import getTop
 	#q = request.args['author']
 	options = {'video_id': request.args['video_id']}
-	return jsonify({"video_id": getTop(options)})
+	return jsonify({"video_id": youtube.getRelated(options)})
 
 
 @app.route('/register')

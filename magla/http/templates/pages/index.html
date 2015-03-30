@@ -4,6 +4,12 @@
 <meta id="db_url" data-db_url="{{ db_url }}">
 
 <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+<div class="search text-center">
+<form id="search" action="javascript:searchVideo();">
+    <input type=text name=q>
+    <input type=submit value="Search">
+</form>
+</div>
     <div id="player"></div>
     <div id="controls" class="text-center">
     <a onclick="playVideo();"> <span class="fa fa-play fa-4x"></span></a>
@@ -27,7 +33,7 @@
         player = new YT.Player('player', {
           height: '480',
           width: '640',
-          videoId: 'e-ORhEE9VVg',
+          videoId: 'co6WMzDOh1o',
 	  autohide: '0',
 	  loop: '1',
           events: {
@@ -83,9 +89,35 @@
 			}
 		  });//end of ajax
 	}
+	function searchVideo() {
+	$.ajax({
+			type:"POST",
+			url: "/",
+			accepts: "application/json",
+			dataType: "json",
+		
+			headers: { 
+			  "X-Stream": "true"    
+			},
+			data: $('#search').serializeArray(),
+			success: function(data, textStatus, jqXHR){
+				console.log(data.video_id);
+				player.loadVideoById(data.video_id);
+			},
+		
+			error: function(jqXHR, textStatus, errorThrown){
+			 //alert(errorThrown);
+			 console.log(textStatus);
+			 return(textStatus)
+			}
+		  });//end of ajax
+	}
+	
       function stopVideo() {
         player.stopVideo();
       }
+
+	
     </script>
 </script>
 {% endblock %}
