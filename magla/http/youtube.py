@@ -10,29 +10,46 @@ from oauth2client.tools import argparser
 DEVELOPER_KEY = "AIzaSyB2mdtS2ixK8Ai5qTdfOmHjwV8BKYuiDJo"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
-
-def getTop(options):
-	youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
 	developerKey=DEVELOPER_KEY)
 
+def getFromSearch(options):
+	search_response = youtube.search().list(
+	q=options['q'],
+	type='video',
+	part="id,snippet",
+	maxResults='10',
+	).execute()
+
+	return pickRandom(search_response)
+
+def getRelated(options):
 	# Call the search.list method to retrieve results matching the specified
 	# query term.
 	search_response = youtube.search().list(
-	#q=options.q
+	#q=options['q'],
 	type='video',
 	relatedToVideoId=options['video_id'],
 	part="id,snippet",
-	maxResults='25',
+	maxResults='10',
 	).execute()
+	
+	return pickRandom(search_response)
 
-	vid_ids = []
-	for search_result in search_response.get("items", []):
-		if search_result["id"]["kind"] == "youtube#video":
-			vid_ids.append("%s" % search_result["id"]["videoId"])
 
-	from random import randrange
-	i = randrange(0,5)
-	return vid_ids[i]
+def pickRandom(response):
+	videos = []
+	
+	for result in response.get("items", []):
+		if result["id"]["kind"] == "youtube#video":
+			v = {}
+			v['id'] = result["id"]["videoId"]
+			v['title'] = result['snippet']['title']
+			videos.append(v)
+		print result['etag']
+			
+	import random
+	return random.choice(videos)
 
 
 if __name__ == "__main__":

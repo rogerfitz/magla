@@ -2,7 +2,7 @@
 # Imports
 #----------------------------------------------------------------------------#
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, session, jsonify
 # from flask.ext.sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
@@ -30,7 +30,7 @@ def shutdown_session(exception=None):
 '''
 
 # Login required decorator.
-'''
+
 def login_required(test):
     @wraps(test)
     def wrap(*args, **kwargs):
@@ -40,7 +40,6 @@ def login_required(test):
             flash('You need to login first.')
             return redirect(url_for('login'))
     return wrap
-'''
 #----------------------------------------------------------------------------#
 # Controllers.
 #----------------------------------------------------------------------------#
@@ -48,11 +47,14 @@ def login_required(test):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-	#return render_template('pages/home.html')
+	if not session.get('video'):
+		session['video'] = []	
 	if request.method == 'POST':
-		print request.form
-		options = {'q': request.form['q']}
-		return jsonify({"video_id": youtube.getFromSearch(options)})
+		options = {'q': request.form['q'], 'played': session['video']}
+		video = youtube.getFromSearch(options)
+		session['video'].append(video)
+		print video
+		return jsonify(video)
 	return render_template('pages/index.html', db_url=config.db_url)
 
 @app.route('/about')
@@ -62,6 +64,7 @@ def about():
 
 @app.route('/login')
 def login():
+    #http://blog.miguelgrinberg.com/post/restful-authentication-with-flask
     form = LoginForm(request.form)
     return render_template('forms/login.html', form=form)
 
@@ -79,9 +82,11 @@ def get():
 #need to require a csrf to ensure website endpoint not abused
 @app.route('/api', methods=['GET'])
 def api():
-	#q = request.args['author']
-	options = {'video_id': request.args['video_id']}
-	return jsonify({"video_id": youtube.getRelated(options)})
+	options = {'video_id': request.args['video_id'], 'played': session['video']}
+	video = youtube.getRelated(options)
+	session['video'].append(video)
+	print video
+	return jsonify(video)
 
 
 @app.route('/register')
