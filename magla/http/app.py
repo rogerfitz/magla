@@ -2,7 +2,7 @@
 # Imports
 #----------------------------------------------------------------------------#
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, jsonify
 # from flask.ext.sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
@@ -11,6 +11,8 @@ import os
 #from . import *
 import config
 import requests
+from oauth2client.tools import argparser
+import youtube
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -28,7 +30,7 @@ def shutdown_session(exception=None):
 '''
 
 # Login required decorator.
-'''
+
 def login_required(test):
     @wraps(test)
     def wrap(*args, **kwargs):
@@ -38,20 +40,22 @@ def login_required(test):
             flash('You need to login first.')
             return redirect(url_for('login'))
     return wrap
-'''
 #----------------------------------------------------------------------------#
 # Controllers.
 #----------------------------------------------------------------------------#
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    #return render_template('pages/home.html')
-    return render_template('pages/index.html', db_url=config.db_url)
-
-@app.route('/test')
-def test():
-    return render_template('pages/test.html')
+	if not session.get('video'):
+		session['video'] = []	
+	if request.method == 'POST':
+		options = {'q': request.form['q'], 'played': session['video']}
+		video = youtube.getFromSearch(options)
+		session['video'].append(video)
+		print video
+		return jsonify(video)
+	return render_template('pages/index.html', db_url=config.db_url)
 
 @app.route('/about')
 def about():
@@ -60,6 +64,7 @@ def about():
 
 @app.route('/login')
 def login():
+    #http://blog.miguelgrinberg.com/post/restful-authentication-with-flask
     form = LoginForm(request.form)
     return render_template('forms/login.html', form=form)
 
@@ -73,6 +78,15 @@ def get():
     except:
         return 'Error loading', url
 
+
+#need to require a csrf to ensure website endpoint not abused
+@app.route('/api', methods=['GET'])
+def api():
+	options = {'video_id': request.args['video_id'], 'played': session['video']}
+	video = youtube.getRelated(options)
+	session['video'].append(video)
+	print video
+	return jsonify(video)
 
 
 @app.route('/register')
