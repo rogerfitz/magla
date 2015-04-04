@@ -47,6 +47,7 @@ def login_required(test):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+	#session.clear()
 	if not session.get('video'):
 		session['video'] = []	
 	if request.method == 'POST':
@@ -55,7 +56,7 @@ def home():
 		session['video'].append(video)
 		print video
 		return jsonify(video)
-	return render_template('pages/index.html', db_url=config.db_url)
+	return render_template('pages/index.html', db_url=config.db_url, videos=session.get('video'))
 
 @app.route('/about')
 def about():

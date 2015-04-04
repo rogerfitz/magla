@@ -18,7 +18,11 @@
     <a onclick="prevVideo();"><span class="fa fa-step-backward fa-4x"></span></a>
     <a onclick="pauseVideo();"><span class="fa fa-pause fa-4x"></span></a>
     <a onclick="nextVideo();"><span class="fa fa-step-forward fa-4x"></span></a>
+    <a onclick="minimize();"><span id='sizeToggle' class="fa fa-compress fa-2x"></span></a>
     </div>
+    <div id="playlist">
+	<ol id="videos">
+	</ol>
     <script>
       // 2. This code loads the IFrame Player API code asynchronously.
       var tag = document.createElement('script');
@@ -57,6 +61,16 @@
           nextVideo();
         }
       }
+	function minimize(){
+		if ($('#player').height() == '0'){
+			$('#player').height('480');
+			$('#sizeToggle').removeClass('fa-expand').addClass('fa-compress');
+		}
+		else{
+			$('#player').height('0');
+			$('#sizeToggle').removeClass('fa-compress').addClass('fa-expand');
+		}
+	}
 	
 	function playVideo(){
 	player.playVideo();
@@ -65,8 +79,22 @@
 	player.pauseVideo();
 	}
 	function prevVideo() {
-	player.loadVideoId('e-ORhEE9VVg');
+	var video = $.parseJSON($('#videos li:eq(-2)').attr("data"));
+	player.loadVideoById(video.id);
+	$('#title').text(video.title);
 	}
+	function clickVideo(id){
+	var video = $.parseJSON($('#'+id).attr("data"));
+	player.loadVideoById(video.id);
+	$('#title').text(video.title);
+	}
+	
+	function loadVideo(video) {
+	player.loadVideoById(video.id);
+	$('#title').text(video.title);
+	$('#videos').append("<li id='"+video.id+"' data='"+JSON.stringify(video)+"'>"+'<a onclick="clickVideo('+"'"+video.id+"'"+');">'+video.title+'</a></li>');
+	}
+	
 	function nextVideo() {
 	$.ajax({
 			type:"GET",
@@ -79,9 +107,7 @@
 			},
 			data: player.getVideoData(),
 			success: function(video, textStatus, jqXHR){
-				console.log(video.id);
-				player.loadVideoById(video.id);
-				$('#title').text(video.title);
+				loadVideo(video);
 			},
 		
 			error: function(jqXHR, textStatus, errorThrown){
@@ -104,8 +130,7 @@
 			data: $('#search').serializeArray(),
 			success: function(video, textStatus, jqXHR){
 				console.log(video.id);
-				player.loadVideoById(video.id);
-				$('#title').text(video.title);
+				loadVideo(video);
 			},
 		
 			error: function(jqXHR, textStatus, errorThrown){
