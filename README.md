@@ -2,9 +2,13 @@ MAGLA
 =====
 A Music Player and Recommendation Website 
 
-Build with pip install -r requirements.txt
+Build in the magla folder with 
+virtualenv --distribute env
+. env/bin/activate (creates a virtual environment to store libraries)
+pip install -r requirements.txt
 
-runserver with python http/app.py
+run executing magla/http/app.py
+e.g. python magla/http/app.py
 
 http is only in use module at the moment. 
 
