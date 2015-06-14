@@ -20,6 +20,7 @@ SECRET_KEY = 'my precious'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'database.db')
 
 try:
+    #print 'sup'
     from local_config import *
 except ImportError:
     print 'local_config.py NOT FOUND\nProceeding with defaults'

@@ -6,11 +6,10 @@ from flask import Flask, render_template, request, session, jsonify
 # from flask.ext.sqlalchemy import SQLAlchemy
 import logging
 from logging import Formatter, FileHandler
-from forms import *
+#from forms import *
 import os
-#from . import *
 import config
-import requests
+#import requests
 from oauth2client.tools import argparser
 import youtube
 
@@ -51,7 +50,10 @@ def home():
 	if not session.get('video'):
 		session['video'] = []	
 	if request.method == 'POST':
-		options = {'q': request.form['q'], 'played': session['video']}
+		q = request.form['q']
+		q += '+-live+-album'
+		print q
+		options = {'q': q, 'played': session['video'], 'maxResults': 25}
 		video = youtube.getFromSearch(options)
 		session['video'].append(video)
 		print video
@@ -139,6 +141,7 @@ if __name__ == '__main__':
 # Or specify port manually:
 
 if __name__ == '__main__':
+    print 'supa'
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
 
