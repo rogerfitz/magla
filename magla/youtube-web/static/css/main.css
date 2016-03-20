@@ -1,0 +1,50 @@
+body { 
+  font: 14px helvetica neue, helvetica, arial, sans-serif;
+}
+
+#cy {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+
+.qtip-wiki{
+    max-width: 385px;
+    max-height: 300px;
+}
+
+.qtip-wiki p{
+    margin: 0 0 6px;
+}
+
+.qtip-wiki h1{
+    font-size: 20px;
+    line-height: 1.1;
+    margin: 0 0 5px;
+}
+
+.qtip-wiki img{
+    float: right;
+    margin: 10px 10px 10px 0;
+}
+
+.qtip-wiki .info{
+    overflow: hidden;
+}
+
+.qtip-wiki p.note{
+    font-weight: 700;
+}
+
+#controls {
+  ;
+}
+
+.fa {
+cursor: pointer;
+}
+
+iframe { display: block; margin: 0 auto; }

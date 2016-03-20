@@ -1,0 +1,19 @@
+Country
+Folk
+Blues
+Jazz
+Brit Invasion
+Soul
+Funk
+Psychedelic Rock
+Southern Rock
+Disco
+Rap
+Hip Hop
+Folk Rock
+New Wave
+Grunge
+Hard Rock
+Punk
+Heavy Metal
+Progressive Rock
