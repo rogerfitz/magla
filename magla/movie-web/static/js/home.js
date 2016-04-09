@@ -1,333 +1,194 @@
-function playVideo(node)
-{
-  var x=node.position().x;
-  var y=node.position().y;
-  console.log('/get?url='+node.data().wiki_url);
-  var url = '/get?url='+node.data().wiki_url
-
-  //Video
-  url = '/get?url=https://www.youtube.com/watch?v=a3HemKGDavw'
-  var videoID = url.match(/(youtu\.be\/|&*v=|\/v\/|\/embed\/)+([A-Za-z0-9\-_]{5,11})/);
-  
-  videoID=videoID[2]
-
-  $("#cy").qtip({
-    content: $('<div />', { id: videoID }),
-    position: {
-        viewport: $(window),
-        target: [1300, 50],
-        adjust: 
-        {
-          x: 5,
-          y:5,
-        }
-    },
-    style: 
-    {
-      classes: 'qtip-youtube',
-      tip: false,
-      width: 295,
-    },
-    events: {
-            render: function(event, api) {
-                new YT.Player(videoID, {
-                    playerVars: {
-                        autoplay: 1,
-                        enablejsapi: 1,
-                        origin: document.location.host
-                    },
-                    origin: document.location.host,
-                    height: 180,
-                    width: 275,
-                    videoId: videoID,
-                    events: {
-                        'onReady': function(e) {
-                          
-                            api.player = e.target;
-                            api.player.mute();
-                        },
-                    }
-                });
-            },
-            hide: function(event, api){
-                api.player && api.player.stopVideo();
-            },
-          },
-    
-    show: 
-    {
-      delay: 0,
-      event: false,
-      ready: true,
-      effect:false
-    },
-
-    hide: 'unfocus'
-                
-    });
-}
-
 $(function(){ // on dom ready
 
-  var tooltips = $('#cy').qtip({
-         id: 'sampletooltip',
-    content: {
-        text: 'Hi. I am a sample tooltip!',
-        title: 'Sample tooltip'
-    }
-  });
-  var qtipApi = tooltips.qtip('api');
-  qtipApi.toggle(true);
-
-  var cy = cytoscape({
-    container: document.getElementById('cy'),
-    
-    style: cytoscape.stylesheet()
-      .selector('node')
-        .css({
-          'height': 80,
-          'width': 80,
-          'background-fit': 'cover',
-          'border-color': '#000',
-          'border-width': 3,
-          'border-opacity': 0.5,
-          'background-color': 'white',
-          'background-image': 'data(img_url)',
-          'content': 'data(name)',//'Jimi Hendrix',
-          'text-valign': 'bottom',
-          'z-index': 100,
-          
-        })
-      .selector('edge')
-        .css({
-          'width': 6,
-          'target-arrow-shape': 'triangle',
-          'line-color': '#ffaaaa',
-          'target-arrow-color': '#ffaaaa'
-        })
-      ,
-    
-    elements: neo4j.fromLabel('genre'),
-    
-    //shift to arbor. Fix resume problem
-    layout: {
-      name: 'breadthfirst',
-      fit: false,
-      directed: true,
-      gravity: true,
-      avoidOverlap: true,
-      infinite: true,
-      animate: true,
-      stiffness: 0.001,
-      damping: .6,
-      padding: 5,
-      edgeLength: 1,
-      liveUpdate: true,
-    },
-    ready: function(){ 
-      //Change to custom HTML canvas element seperate from cytoscape universe. PIN to bottom of viewable canvas
-      cy.add({ group: "nodes", 
-        data: { id: "queue", img_url: 'http://' }, 
-        position: { x: 100, y: 100 }, 
-        css: {'background-color': 'blue', height: 125, width: 200, shape: 'roundrectangle', 'z-index': 0} })
-        }
-  }); // cy init
-  cy.cxtmenu({
-            commands: [
-              {
-                content: '<span class="fa fa-play fa-2x"></span>',
-                select: function(){
-                  playVideo(this);
-                  console.log( this.id() );
-                }
-              },
-              {
-                content: '<span class="fa fa-plus fa-2x"></span>',
-                select: function(){
-                  var c = document.getElementById('cy')//.getContext("2d");
-                  var ctx = c.getContext('2d');
-                  ctx.fillStyle = "Red";
-                  ctx.fillRect(0,0,150,75);
-                  console.log( this.data('name') );
-                }
-              },
-              {
-                content: 'Position',
-                select: function(){
-                  console.log( this.position() );
-                }
-              }
-            ]
-          });
-  cy.panningEnabled(true)
+// photos from flickr with creative commons license
   
+var cy = cytoscape({
+  container: document.getElementById('cy'),
   
+  boxSelectionEnabled: false,
+  autounselectify: true,
+  
+  style: cytoscape.stylesheet()
+    .selector('node')
+      .css({
+        'content': 'data(id)',
+        'height': 60,
+        'width': 60,
+        'background-fit': 'cover',
+        'border-color': '#000',
+        'border-width': 3,
+        'border-opacity': 0.5
+      })
+    .selector('.eating')
+      .css({
+        'border-color': 'red'
+      })
+    .selector('.eater')
+      .css({
+        'border-width': 9
+      })
+    .selector('edge')
+      .css({
+        'width': 6,
+        'target-arrow-shape': 'triangle',
+        'line-color': '#ffaaaa',
+        'target-arrow-color': '#ffaaaa'
+      })
+    .selector('#bird')
+      .css({
+        'background-image': 'https://farm8.staticflickr.com/7272/7633179468_3e19e45a0c_b.jpg'
+      })
+    .selector('#cat')
+      .css({
+        'background-image': 'https://farm2.staticflickr.com/1261/1413379559_412a540d29_b.jpg'
+      })
+    .selector('#ladybug')
+      .css({
+        'background-image': 'https://farm4.staticflickr.com/3063/2751740612_af11fb090b_b.jpg'
+      })
+  .selector('#aphid')
+      .css({
+        'background-image': 'https://farm9.staticflickr.com/8316/8003798443_32d01257c8_b.jpg'
+      })
+  .selector('#rose')
+      .css({
+        'background-image': 'https://farm6.staticflickr.com/5109/5817854163_eaccd688f5_b.jpg'
+      })
+  .selector('#grasshopper')
+      .css({
+        'background-image': 'https://farm7.staticflickr.com/6098/6224655456_f4c3c98589_b.jpg'
+      })
+  .selector('#plant')
+      .css({
+        'background-image': 'https://farm1.staticflickr.com/231/524893064_f49a4d1d10_z.jpg'
+      })
+  .selector('#wheat')
+      .css({
+        'background-image': 'https://farm3.staticflickr.com/2660/3715569167_7e978e8319_b.jpg'
+      }),
+  
+  elements: {'edges': [{'data': {'source': 'The Shawshank Redemption',
+    'target': 'Pulp Fiction'}},
+  {'data': {'source': 'The Shawshank Redemption', 'target': 'Forrest Gump'}},
+  {'data': {'source': 'The Shawshank Redemption', 'target': 'L\xe9on'}},
+  {'data': {'source': 'The Shawshank Redemption', 'target': 'The Lion King'}},
+  {'data': {'source': 'The Godfather: Part II', 'target': 'Chinatown'}},
+  {'data': {'source': 'The Dark Knight', 'target': 'WALL\xb7E'}},
+  {'data': {'source': 'The Dark Knight', 'target': 'Gran Torino'}},
+  {'data': {'source': 'The Dark Knight', 'target': 'Yip Man'}},
+  {'data': {'source': 'Pulp Fiction', 'target': 'Forrest Gump'}},
+  {'data': {'source': 'Pulp Fiction', 'target': 'L\xe9on'}},
+  {'data': {'source': 'Pulp Fiction', 'target': 'The Lion King'}},
+  {'data': {'source': "Schindler's List",
+    'target': 'In the Name of the Father'}},
+  {'data': {'source': "Schindler's List", 'target': 'Jurassic Park'}},
+  {'data': {'source': "Schindler's List", 'target': 'Groundhog Day'}},
+  {'data': {'source': '12 Angry Men', 'target': 'Paths of Glory'}},
+  {'data': {'source': '12 Angry Men',
+    'target': 'The Bridge on the River Kwai'}},
+  {'data': {'source': '12 Angry Men', 'target': 'Det sjunde inseglet'}},
+  {'data': {'source': 'The Lord of the Rings: The Return of the King',
+    'target': 'Oldeuboi'}},
+  {'data': {'source': 'The Lord of the Rings: The Return of the King',
+    'target': 'Finding Nemo'}},
+  {'data': {'source': 'The Lord of the Rings: The Return of the King',
+    'target': 'Kill Bill: Vol. 1'}},
+  {'data': {'source': 'The Lord of the Rings: The Return of the King',
+    'target': 'Pirates of the Caribbean: The Curse of the Black Pearl'}},
+  {'data': {'source': 'Fight Club', 'target': 'The Matrix'}},
+  {'data': {'source': 'Fight Club', 'target': 'The Green Mile'}},
+  {'data': {'source': 'Fight Club', 'target': 'American Beauty'}},
+  {'data': {'source': 'Fight Club', 'target': 'The Sixth Sense'}}],
+ 'nodes': [{'data': {'id': 'The Shawshank Redemption'}},
+  {'data': {'id': 'Pulp Fiction'}},
+  {'data': {'id': 'Forrest Gump'}},
+  {'data': {'id': 'L\xe9on'}},
+  {'data': {'id': 'The Lion King'}},
+  {'data': {'id': 'The Godfather'}},
+  {'data': {'id': 'The Godfather: Part II'}},
+  {'data': {'id': 'Chinatown'}},
+  {'data': {'id': 'The Dark Knight'}},
+  {'data': {'id': 'WALL\xb7E'}},
+  {'data': {'id': 'Gran Torino'}},
+  {'data': {'id': 'Yip Man'}},
+  {'data': {'id': 'Pulp Fiction'}},
+  {'data': {'id': 'Forrest Gump'}},
+  {'data': {'id': 'L\xe9on'}},
+  {'data': {'id': 'The Lion King'}},
+  {'data': {'id': "Schindler's List"}},
+  {'data': {'id': 'In the Name of the Father'}},
+  {'data': {'id': 'Jurassic Park'}},
+  {'data': {'id': 'Groundhog Day'}},
+  {'data': {'id': '12 Angry Men'}},
+  {'data': {'id': 'Paths of Glory'}},
+  {'data': {'id': 'The Bridge on the River Kwai'}},
+  {'data': {'id': 'Det sjunde inseglet'}},
+  {'data': {'id': 'The Lord of the Rings: The Return of the King'}},
+  {'data': {'id': 'Oldeuboi'}},
+  {'data': {'id': 'Finding Nemo'}},
+  {'data': {'id': 'Kill Bill: Vol. 1'}},
+  {'data': {'id': 'Pirates of the Caribbean: The Curse of the Black Pearl'}},
+  {'data': {'id': 'Il buono, il brutto, il cattivo'}},
+  {'data': {'id': 'Fight Club'}},
+  {'data': {'id': 'The Matrix'}},
+  {'data': {'id': 'The Green Mile'}},
+  {'data': {'id': 'American Beauty'}},
+  {'data': {'id': 'The Sixth Sense'}}]},
+  
+  layout: {
+    name: 'cose'
+  }
+}); // cy init
+  
+cy.on('tap', 'node', function(){
+  var nodes = this;
+  var tapped = nodes;
+  var food = [];
+  
+  nodes.addClass('eater');
+  
+  for(;;){
+    var connectedEdges = nodes.connectedEdges(function(){
+      return !this.target().anySame( nodes );
+    });
     
-/*
-  //custom dblClk because maxkfranz is a stupid fucking liberal
-  var tappedBefore = null;
-  cy.on('click', function(event) {
-    var tappedNow = event.cyTarget;
-    var origEvent = event;
-    var timer = setTimeout(function(){if (tappedBefore === tappedNow){
-      //SINGLE CLICK
-      tappedBefore = null;
-      console.log(origEvent);
-      tappedNow.trigger('clk', origEvent);
+    var connectedNodes = connectedEdges.targets();
+    
+    Array.prototype.push.apply( food, connectedNodes );
+    
+    nodes = connectedNodes;
+    
+    if( nodes.empty() ){ break; }
+  }
+        
+  var delay = 0;
+  var duration = 500;
+  for( var i = food.length - 1; i >= 0; i-- ){ (function(){
+    var thisFood = food[i];
+    var eater = thisFood.connectedEdges(function(){
+      return this.target().same(thisFood);
+    }).source();
+            
+    thisFood.delay( delay, function(){
+      eater.addClass('eating');
+    } ).animate({
+      position: eater.position(),
+      css: {
+        'width': 10,
+        'height': 10,
+        'border-width': 0,
+        'opacity': 0
       }
-    }, 300);
-    if(tappedBefore === tappedNow) 
-    {
-      tappedBefore = null;
-      tappedNow.trigger('dblClk');    
-    } else {
-      tappedBefore = tappedNow;
-    }
-  });
-*/
-/*
-//Video
-cy.on('click','node', function(event){
-  console.log(this);
-  console.log('event');
-  console.log(event);
-  var x=event.cyPosition.x;
-  var y=event.cyPosition.y;
-  console.log(x)       
-  console.log(this)          
-  console.log('/get?url='+this.data().wiki_url);
-  var url = '/get?url='+this.data().wiki_url
-
-  //Video
-  url = '/get?url=https://www.youtube.com/watch?v=a3HemKGDavw'
-  var videoID = url.match(/(youtu\.be\/|&*v=|\/v\/|\/embed\/)+([A-Za-z0-9\-_]{5,11})/);
+    }, {
+      duration: duration,
+      complete: function(){
+        thisFood.remove();
+      }
+    });
+    
+    delay += duration;
+  })(); } // for
   
-  videoID=videoID[2]
-  console.log(videoID)
+}); // on tap
 
-  $("#cy").qtip({
-    content: $('<div />', { id: videoID }),
-    position: {
-        viewport: $(window),
-        target: [x+3, y+3],
-        adjust: 
-        {
-          x: 10,
-          y:7
-        }
-    },
-    style: 
-    {
-      classes: 'qtip-youtube',
-      width: 295,
-    },
-    events: {
-            render: function(event, api) {
-                new YT.Player(videoID, {
-                    playerVars: {
-                        autoplay: 1,
-                        enablejsapi: 1,
-                        origin: document.location.host
-                    },
-                    origin: document.location.host,
-                    height: 180,
-                    width: 275,
-                    videoId: videoID,
-                    events: {
-                        'onReady': function(e) {
-                          
-                            api.player = e.target;
-                            ///api.player.mute();
-                        },
-                    }
-                });
-            },
-            hide: function(event, api){
-                api.player && api.player.stopVideo();
-            },
-          },
-    
-    show: 
-    {
-      delay: 0,
-      event: false,
-      ready: true,
-      effect:false
-    },
-
-    hide: 'unfocus'
-                
-    });
-  });
-
-  cy.on('mouseover', 'node', function(){
-    console.log(this.data());
-  })
-
-  cy.on('grab', 'node', function(event){
-    console.log(event)
-    var x=event.cyTarget.position.x;
-    var y=event.cyTarget.position.y;
-    console.log('drag');
-    var data = jQuery.extend(true, {},this.data())//Obj copy
-    data['id']+='.'
-    data['class']='clone'
-    data['z-index']=500
-    console.log(this.data())
-    console.log(data)
-    
-    cy.add({ group: "nodes", 
-        data: data, 
-        position: { x: x, y: y+10 }, 
-        })
-
-    cy.layout({
-      name: 'breadthfirst',
-      fit: false,
-      directed: true,
-      gravity: true,
-      avoidOverlap: true,
-      infinite: true,
-      animate: true,
-      stiffness: 0.001,
-      damping: .6,
-      padding: 5,
-      edgeLength: 1,
-      liveUpdate: false,
-    });
-    
-  })
-  //Need to rewrite all event codes. 
-  //Normalized events cause experience to suffer for both PC and mobile. Or as maxkfranz would say "both function equally well"
-  cy.on('cxttap', 'node', function(){
-    window.open(this.data().wiki_url, '_blank');
-  });
-
-  cy.on('dblClk', 'node', function(){
-    console.log('Get Children');
-    var n = neo4j.getChildren(this);
-    console.log(n.nodes)
-    cy.add(n.nodes)
-    cy.add(n.edges)
-    cy.layout({
-      name: 'breadthfirst',
-      fit: false,
-      directed: true,
-      gravity: true,
-      avoidOverlap: true,
-      infinite: true,
-      animate: true,
-      friction: 10,
-      //fps: 1,
-      stiffness: 1001,
-
-      repulsion: 10000,
-    });
-  });
-*/
-
-
-
-}); // eof
-
-
+}); // on dom ready

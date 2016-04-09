@@ -11,7 +11,8 @@ import os
 import config
 #import requests
 #from oauth2client.tools import argparser
-import pick
+import youtube
+#import pick
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -55,7 +56,7 @@ def home():
 		print q
 		options = {'q': q, 'played': session['video'], 'maxResults': 25}
         #video has id and title
-		video = pick.getFromSearch(options)
+		video = youtube.getFromSearch(options)
 		session['video'].append(video)
 		print video
 		return jsonify(video)
@@ -87,7 +88,7 @@ def get():
 @app.route('/api', methods=['GET'])
 def api():
 	options = {'video_id': request.args['video_id'], 'played': session['video']}
-	video = pick.getRelated(options)
+	video = youtube.getRelated(options)
 	session['video'].append(video)
 	print video
 	return jsonify(video)

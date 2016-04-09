@@ -9,7 +9,6 @@
 	        graphics : graphics
 	    });
 	renderer.run();
-	graphics class is responsible for rendering nodes and links on the page. And renderer orchestrates the process. To change nodes appearance tell graphics how to represent them. Here is an example of graph with six people who I follow at github:
 
 	var graph = Viva.Graph.graph();
 

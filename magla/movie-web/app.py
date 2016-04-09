@@ -27,20 +27,7 @@ app.config.from_object('config')
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-	#session.clear()
-	if not session.get('video'):
-		session['video'] = []	
-	if request.method == 'POST':
-		q = request.form['q']
-		q += '+-live+-album'
-		print q
-		options = {'q': q, 'played': session['video'], 'maxResults': 25}
-        #video has id and title
-		video = pick.getFromSearch(options)
-		session['video'].append(video)
-		print video
-		return jsonify(video)
-	return render_template('pages/visualization.html', db_url=config.db_url, videos=session.get('video'))
+	return render_template('pages/test.html', db_url=config.db_url)
 
 @app.route('/about')
 def about():
@@ -124,6 +111,6 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
     print 'supa'
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT',31337))
     app.run(host='0.0.0.0', port=port, debug=True)
 
