@@ -98,7 +98,7 @@
 	function nextVideo() {
 	$.ajax({
 			type:"GET",
-			url: "/api",
+			url: "http://ec2-52-15-106-19.us-east-2.compute.amazonaws.com/api",
 			accepts: "application/json",
 			dataType: "json",
 		
@@ -120,7 +120,7 @@
 	function searchVideo() {
 	$.ajax({
 			type:"POST",
-			url: "/",
+			url: "http://ec2-52-15-106-19.us-east-2.compute.amazonaws.com/",
 			accepts: "application/json",
 			dataType: "json",
 		
@@ -150,9 +150,9 @@
 </script>
 {% endblock %}
 {% block script %}
-  <script src="/static/js/libs/jquery-1.9.1.js"></script>
-  <script src="/static/js/neo4j.js"></script>
-  <script src="/static/js/libs/jquery.qtip.min.js"></script>
+  <script src="http://ec2-52-15-106-19.us-east-2.compute.amazonaws.com/static/js/libs/jquery-1.9.1.js"></script>
+  <script src="http://ec2-52-15-106-19.us-east-2.compute.amazonaws.com/static/js/neo4j.js"></script>
+  <script src="http://ec2-52-15-106-19.us-east-2.compute.amazonaws.com/static/js/libs/jquery.qtip.min.js"></script>
   <script type="text/javascript" src="http://www.youtube.com/player_api"></script>
-<script src="/static/js/plain.js"></script>
+<script src="http://ec2-52-15-106-19.us-east-2.compute.amazonaws.com/static/js/plain.js"></script>
 {% endblock %}
