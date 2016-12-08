@@ -54,7 +54,7 @@ def home():
 		q = request.form['q']
 		q += '+-live+-album'
 		print q
-		options = {'q': q, 'played': session['video'], 'maxResults': 25}
+		options = {'q': q, 'played': session['video'], 'maxResults': 3}
         #video has id and title
 		video = youtube.getFromSearch(options)
 		session['video'].append(video)
